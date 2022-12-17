@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Chat</title>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    </head>
+    <body>
+        <h1>WebSocket Chat</h1>
+        <form action="" onsubmit="sendMessage(event)">
+            <input type="text" id="messageText" autocomplete="off"/>
+            <button>Send</button>
+        </form>
+        <ul id='messages'>
+        </ul>
+        <script>
+            function getHistory () {
+                let id = 1;
+                let returnResult;
+
+                let options = {
+                    method: 'GET',
+                    // url: `https://google.com/complete/search?client=psy-ab&gl=fr&lr=lang_fr&q=${word}%20${question}`,
+                    url: `http://localhost:8000/history?id=${id}`,
+                    responseType: 'json',
+                    charset: 'utf-8',
+                };
+                axios.request(options)
+                 .then(function (result) {
+                    returnResult = result.data;
+                    console.log("통신 결과 : ", result);
+                    console.log("status : ", result.status);
+                    console.log("data : ", result.data);
+                    return returnResult
+                })
+                .catch(function (error) {
+                console.log("에러 발생 : ", error);
+                });
+
+                console.log("바로 실행 로그");
+            }
+
+            var ws = new WebSocket("ws://localhost:8000/ws");
+            ws.onmessage = function(event) {
+                var messages = document.getElementById('messages')
+                var message = document.createElement('li')
+                var content = document.createTextNode(event.data)
+                message.appendChild(content)
+                messages.appendChild(message)
+                // let promise = new Promise(resolve => {
+                //     resolve(getHistory())
+                // })
+                // promise.then((resolve) => {
+                //     console.log(resolve)
+                // })
+
+                document.getElementById("demo").innerHTML = history;
+
+                console.log('메시지 전송 완료')
+                // const spawn = require('child_process').spawn;
+                // const result = spawn('child_process', ['testapp.py']);
+                console.log('testapp 실행완료')
+
+            };
+            function sendMessage(event) {
+                var input = document.getElementById("messageText")
+                ws.send(input.value)
+                input.value = ''
+                event.preventDefault()
+            }
+
+        </script>
+<!--        <script>-->
+        <h1 style="padding:10px;">History list</h1>
+        <p id="demo"></p>
+
+<!--        </script>-->
+
+
+    </body>
+</html>
